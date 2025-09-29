@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pieza de Danza - Institut del Teatre</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6a0dad;
+      --primary-light: #8a2be2;
+      --white: #ffffff;
+      --light-gray: #f8f9fa;
+      --text-dark: #333333;
+      --text-light: #666666;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: var(--white);
+      color: var(--text-dark);
+      padding: 20px;
+      text-align: center;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 700px;
+      width: 100%;
+      padding: 40px 20px;
+    }
+    
+    header {
+      margin-bottom: 60px;
+    }
+    
+    h1 {
+      font-weight: 400;
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      color: var(--text-dark);
+      letter-spacing: -0.5px;
+    }
+    
+    .subtitle {
+      font-weight: 300;
+      font-size: 1.1rem;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+    
+    .author {
+      font-weight: 300;
+      font-size: 0.95rem;
+      color: var(--primary);
+    }
+    
+    .phrase-container {
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 60px 0;
+      padding: 40px 30px;
+      position: relative;
+    }
+    
+    #frase {
+      font-size: 1.8rem;
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--text-dark);
+      transition: opacity 0.8s ease;
+      max-width: 90%;
+    }
+    
+    button {
+      padding: 14px 50px;
+      font-size: 1rem;
+      font-weight: 400;
+      cursor: pointer;
+      background-color: var(--white);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 0;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      letter-spacing: 0.5px;
+    }
+    
+    button:hover {
+      background-color: var(--primary);
+      color: var(--white);
+    }
+    
+    button:active {
+      transform: scale(0.98);
+    }
+    
+    button:disabled {
+      background-color: var(--white);
+      color: var(--text-light);
+      border-color: var(--text-light);
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .instructions {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 0.9rem;
+      color: var(--text-light);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .footer {
+      margin-top: 60px;
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+    
+    /* Animaciones para las frases */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .fade-in {
+      animation: fadeIn 1.2s ease forwards;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 15px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      #frase {
+        font-size: 1.5rem;
+      }
+      
+      .phrase-container {
+        min-height: 180px;
+        margin: 50px 0;
+        padding: 30px 20px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
+      
+      .container {
+        padding: 20px 10px;
+      }
+      
+      h1 {
+        font-size: 1.6rem;
+      }
+      
+      #frase {
+        font-size: 1.3rem;
+      }
+      
+      .phrase-container {
+        min-height: 160px;
+        margin: 40px 0;
+        padding: 25px 15px;
+      }
+      
+      button {
+        padding: 12px 40px;
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Pieza de Danza</h1>
+      <div class="subtitle">Institut del Teatre</div>
+      <div class="author">Lucía Álvarez Pardo</div>
+    </header>
+    
+    <div class="phrase-container">
+      <div id="frase">Esperando para comenzar...</div>
+    </div>
+    
+    <button id="startBtn">Iniciar Experiencia</button>
+    
+    <div class="instructions">
+      Por favor, pulsa "Iniciar Experiencia" cuando comience la pieza y se te indique.
+    </div>
+  </div>
+  
+  <div class="footer">
+    Diseñado para la pieza de danza del Institut del Teatre
+  </div>
+
+  <script>
+    const frases = [
+      { tiempo: 3, texto: "El movimiento es el lenguaje del alma" },
+      { tiempo: 8, texto: "Cada gesto cuenta una historia" },
+      { tiempo: 15, texto: "El espacio entre nosotros vibra" },
+      { tiempo: 22, texto: "El silencio también baila" },
+      { tiempo: 30, texto: "Somos ritmo en un universo de caos" },
+      { tiempo: 38, texto: "La danza es el susurro del cuerpo" },
+      { tiempo: 46, texto: "Cada respiración es un compás" },
+      { tiempo: 55, texto: "El tiempo se detiene cuando bailamos" },
+      { tiempo: 64, texto: "Nuestros cuerpos son instrumentos de emoción" },
+      { tiempo: 74, texto: "La danza nos conecta con lo eterno" }
+    ];
+
+    const fraseDiv = document.getElementById('frase');
+    const startBtn = document.getElementById('startBtn');
+
+    startBtn.addEventListener('click', () => {
+      startBtn.disabled = true;
+      startBtn.textContent = "Experiencia en curso";
+      
+      // Ocultar frase inicial suavemente
+      fraseDiv.style.opacity = '0';
+      
+      setTimeout(() => {
+        const startTime = Date.now();
+        
+        // Mostrar primera frase
+        fraseDiv.textContent = "Preparados...";
+        fraseDiv.style.opacity = '1';
+        
+        const interval = setInterval(() => {
+          const elapsed = Math.floor((Date.now() - startTime) / 1000);
+          
+          const fraseActual = frases.find(f => f.tiempo === elapsed);
+          if (fraseActual) {
+            // Transición suave entre frases
+            fraseDiv.style.opacity = '0';
+            
+            setTimeout(() => {
+              fraseDiv.textContent = fraseActual.texto;
+              fraseDiv.style.opacity = '1';
+            }, 800);
+          }
+
+          // Detener cuando pasen todas las frases
+          if (elapsed > frases[frases.length - 1].tiempo + 2) {
+            clearInterval(interval);
+            
+            setTimeout(() => {
+              fraseDiv.style.opacity = '0';
+              setTimeout(() => {
+                fraseDiv.textContent = "La experiencia ha concluido";
+                fraseDiv.style.opacity = '1';
+              }, 800);
+            }, 1500);
+          }
+        }, 1000);
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

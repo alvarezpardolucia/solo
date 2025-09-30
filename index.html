@@ -218,175 +218,160 @@
   </div>
 
   <script>
-    startBtn.addEventListener('click', () => {
-  ensureAudioCtx(); // desbloquea audio con el gesto del usuario
-  startBtn.disabled = true;
-  startBtn.textContent = "Experiencia en curso";
+  // === 1) MOTOR DE AUDIO: colócalo al principio del <script> ===
+  let audioCtx;
+  function ensureAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  function playBeep(freq = 880, duration = 200, type = 'sine', volume = 0.06) {
+    ensureAudioCtx();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
 
-  fraseDiv.style.opacity = '0';
+    const now = audioCtx.currentTime;
+    const attack = 0.01, release = 0.05;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(volume, now + attack);
+    gain.gain.setValueAtTime(volume, now + duration/1000 - release);
+    gain.gain.linearRampToValueAtTime(0, now + duration/1000);
 
-  setTimeout(() => {
-    const startTime = Date.now();
-    fraseDiv.textContent = "Preparados...";
-    fraseDiv.style.opacity = '1';
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + duration/1000);
+  }
 
-    let i = 0; // siguiente frase a disparar
-    const lastTime = frases[frases.length - 1].tiempo;
+  // === 2) TUS DATOS: define frases (puedes añadir sound a las que quieras) ===
+  const frases = [
+    { tiempo: 1, texto: "Cuando suene, haz lo que diga esa frase",  sound: { type: 'beep', freq: 784, duration: 180 } },
+    { tiempo: 3, texto: "Pero, cuando el tiempo separa las vidas" },
+    { tiempo: 8, texto: "Mantente firme", sound: { type: 'beep', freq: 784, duration: 180 } },
+    { tiempo: 15, texto: "Cuando todo es fluido, nada puede saberse con certeza" },
+    { tiempo: 22, texto: "Mantente firme", sound: { type: 'beep', freq: 784, duration: 180 } },
+    { tiempo: 30, texto: "Sosténlo hasta que lo sientas allí" },
+    { tiempo: 38, texto: "Tan oscuro, denso y húmedo como la tierra" },
+    { tiempo: 46, texto: "Tan vasto, brillante y dulce como el aire" },
+    { tiempo: 55, texto: "Cuando lo único que hay es saber que sientes lo que estás sintiendo" },
+    { tiempo: 64, texto: "Mantente firme", sound: { type: 'beep', freq: 784, duration: 180 } },
+    { tiempo: 70, texto: "Pide a tus manos que conozcan las cosas que sostienen" },
+    { tiempo: 75, texto: "Lo sé, los días pasan tambaleándose en ráfagas estridentes" },
+    { tiempo: 80, texto: "Pero detente a respirar y sabrás que son tuyos" },
+    { tiempo: 85, texto: "Oscilando como una puerta abierta cuando llegan las tormentas" },
+    { tiempo: 90, texto: "Resiste", sound: { type: 'beep', freq: 988, duration: 220, wave: 'square' } },
+    { tiempo: 95, texto: "El tiempo es un asalto, el amor es una misión" },
+    { tiempo: 100, texto: "Trabajamos en vocaciones hasta que, en remisión," },
+    { tiempo: 105, texto: "Deseamos haber tenido paciencia y dado más tiempo a nuestros hijos" },
+    { tiempo: 110, texto: "Siente cada decisión que tomes" },
+    { tiempo: 115, texto: "Tómala, sostenla" },
+    { tiempo: 120, texto: "Mantente firme", sound: { type: 'beep', freq: 784, duration: 180 } },
+    { tiempo: 125, texto: "Abraza a tus amantes" },
+    { tiempo: 130, texto: "Toma sus manos" },
+    { tiempo: 135, texto: "Sostén sus pechos en tus manos como si fueran su sostén" },
+    { tiempo: 140, texto: "Sostén su rostro en tus palmas como una oración" },
+    { tiempo: 145, texto: "Abrázalos toda la noche, siente que te devuelven el abrazo" },
+    { tiempo: 150, texto: "No te contengas" },
+    { tiempo: 155, texto: "Mantente firme", sound: { type: 'beep', freq: 784, duration: 180 } },
+    { tiempo: 160, texto: "Cada dolor" },
+    { tiempo: 165, texto: "Cada agravio" },
+    { tiempo: 170, texto: "Cada puñalada de vergüenza" },
+    { tiempo: 175, texto: "Cada día pasado con un demonio en tu mente persiguiéndote" },
+    { tiempo: 180, texto: "Sosténlo" },
+    { tiempo: 185, texto: "Conoce a los lobos que te cazan" },
+    { tiempo: 190, texto: "Con el tiempo, serán los perros que traigan tus zapatillas" },
+    { tiempo: 195, texto: "Ámalos bien y sentirás que te besan cuando vengan a morder" },
+    { tiempo: 200, texto: "Hocicos calientes desenterrando tus mimos con sus hocicos ensangrentados" },
+    { tiempo: 205, texto: "Resiste", sound: { type: 'beep', freq: 988, duration: 220, wave: 'square' } },
+    { tiempo: 210, texto: "Nada que compres te hará más completo" },
+    { tiempo: 215, texto: "Todo esto se alimenta de que nos sintamos siempre incompletos" },
+    { tiempo: 220, texto: "Y por eso buscamos la felicidad en lo que sea que anhelamos en el momento" },
+    { tiempo: 225, texto: "Y por eso nunca podemos encontrarla realmente allí" },
+    { tiempo: 230, texto: "Por eso te sientas con el amante por el que luchaste" },
+    { tiempo: 235, texto: "En el coche que sudaste años para comprar" },
+    { tiempo: 240, texto: "Llevando el anillo con el que soñaste toda tu vida" },
+    { tiempo: 245, texto: "Y aún así, alguna parte de ti no estará segura de que estos es lo que realmente quieres" },
+    { tiempo: 250, texto: "Deja de ansiar" },
+    { tiempo: 255, texto: "Mantente firme", sound: { type: 'beep', freq: 784, duration: 180 } },
+    { tiempo: 260, texto: "Pero si estás satisfecho con dónde estás, con quién eres" },
+    { tiempo: 265, texto: "No necesitarás comprar nuevo maquillaje o ropa nueva o nuevas ollas y sartenes" },
+    { tiempo: 270, texto: "Para cocinar receras nuevas y emocionantes para gente nueva y emocionante" },
+    { tiempo: 275, texto: "Para hacerte sentir como la persona nueva y emocionante que crees que deberías ser" },
+    { tiempo: 280, texto: "La felicidad, la marca, no es felicidad" },
+    { tiempo: 285, texto: "Somos más inteligentes de lo que creen que somos" },
+    { tiempo: 290, texto: "Nos toman a todos por idiotas, pero ese es su problema" },
+    { tiempo: 300, texto: "Cuando actuamos como idiotas, se convierte en nuestro problema" },
+    { tiempo: 305, texto: "Así que, mantente firme", sound: { type: 'beep', freq: 784, duration: 180 } },
+    { tiempo: 310, texto: "Respira hondo en una playa helada" },
+    { tiempo: 315, texto: "Prueba la sal de la amistad" },
+    { tiempo: 320, texto: "Fíjate en el movimiento de un extraño" },
+    { tiempo: 325, texto: "Mantente firme", sound: { type: 'beep', freq: 784, duration: 180 } },
+    { tiempo: 330, texto: "Y deja que sea" },
+    { tiempo: 335, texto: "Contagioso" },
+  ];
 
-    const interval = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  // === 3) CAPTURA DE ELEMENTOS: declara ANTES de usarlos ===
+  const fraseDiv = document.getElementById('frase');
+  const startBtn = document.getElementById('startBtn');
 
-      // lanza todas las que ya hayan llegado por si el reloj salta
-      while (i < frases.length && elapsed >= frases[i].tiempo) {
-        const f = frases[i];
+  // === 4) ÚNICO manejador de click (elimina duplicados) ===
+  startBtn.addEventListener('click', () => {
+    ensureAudioCtx(); // desbloquea audio en móviles
+    startBtn.disabled = true;
+    startBtn.textContent = "Experiencia en curso";
 
-        // transición visual
-        fraseDiv.style.opacity = '0';
-        setTimeout(() => {
-          fraseDiv.textContent = f.texto;
-          fraseDiv.style.opacity = '1';
-        }, 800);
+    fraseDiv.style.opacity = '0';
 
-        // si tiene sonido, suénalo
-        if (f.sound && f.sound.type === 'beep') {
-          const { freq = 880, duration = 200, wave = 'sine' } = f.sound;
-          playBeep(freq, duration, wave);
-        }
+    setTimeout(() => {
+      const startTime = Date.now();
+      fraseDiv.textContent = "Preparados...";
+      fraseDiv.style.opacity = '1';
 
-        i++;
-      }
+      let i = 0;
+      const lastTime = frases[frases.length - 1].tiempo;
 
-      // final
-      if (elapsed > lastTime + 2) {
-        clearInterval(interval);
-        setTimeout(() => {
+      const interval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+
+        while (i < frases.length && elapsed >= frases[i].tiempo) {
+          const f = frases[i];
+
+          // Transición visual
           fraseDiv.style.opacity = '0';
           setTimeout(() => {
-            fraseDiv.textContent = "La experiencia ha concluido";
+            fraseDiv.textContent = f.texto;
             fraseDiv.style.opacity = '1';
           }, 800);
-        }, 1500);
-      }
-    }, 200); // chequeo más fino para mejor sincronía
-  }, 1000);
-});
 
-    const frases = [
-      { tiempo: 1, texto: "Cuando suene, haz lo que diga esa frase",  sound: { type: 'beep', freq: 784, duration: 180 } },
-      { tiempo: 3, texto: "Pero, cuando el tiempo separa las vidas" },
-      { tiempo: 8, texto: "Mantente firme" },
-      { tiempo: 15, texto: "Cuando todo es fluido, nada puede saberse con certeza" },
-      { tiempo: 22, texto: "Mantente firme" },
-      { tiempo: 30, texto: "Sosténlo hasta que lo sientas allí" },
-      { tiempo: 38, texto: "Tan oscuro, denso y húmedo como la tierra" },
-      { tiempo: 46, texto: "Tan vasto, brillante y dulce como el aire" },
-      { tiempo: 55, texto: "Cuando lo único que hay es saber que sientes lo que estás sintiendo" },
-      { tiempo: 64, texto: "Mantente firme" },
-      { tiempo: 70, texto: "Pide a tus manos que conozcan las cosas que sostienen" },
-      { tiempo: 75, texto: "Lo sé, los días pasan tambaleándose en ráfagas estridentes" },
-      { tiempo: 80, texto: "Pero detente a respirar y sabrás que son tuyos" },
-      { tiempo: 85, texto: "Oscilando como una puerta abierta cuando llegan las tormentas" },
-      { tiempo: 90, texto: "Resiste" },
-      { tiempo: 95, texto: "El tiempo es un asalto, el amor es una misión" },
-      { tiempo: 100, texto: "Trabajamos en vocaciones hasta que, en remisión," },
-      { tiempo: 105, texto: "Deseamos haber tenido paciencia y dado más tiempo a nuestros hijos" },
-      { tiempo: 110, texto: "Siente cada decisión que tomes" },
-      { tiempo: 115, texto: "Tómala, sostenla" },
-      { tiempo: 120, texto: "Mantente firme" },
-      { tiempo: 125, texto: "Abraza a tus amantes" },
-      { tiempo: 130, texto: "Toma sus manos" },
-      { tiempo: 135, texto: "Sostén sus pechos en tus manos como si fueran su sostén" },
-      { tiempo: 140, texto: "Sostén su rostro en tus palmas como una oración" },
-      { tiempo: 145, texto: "Abrázalos toda la noche, siente que te devuelven el abrazo" },
-      { tiempo: 150, texto: "No te contengas" },
-      { tiempo: 155, texto: "Mantente firme" },
-      { tiempo: 160, texto: "Cada dolor" },
-      { tiempo: 165, texto: "Cada agravio" },
-      { tiempo: 170, texto: "Cada puñalada de vergüenza" },
-      { tiempo: 175, texto: "Cada día pasado con un demonio en tu mente persiguiéndote" },
-      { tiempo: 180, texto: "Sosténlo" },
-      { tiempo: 185, texto: "Conoce a los lobos que te cazan" },
-      { tiempo: 190, texto: "Con el tiempo, serán los perros que traigan tus zapatillas" },
-      { tiempo: 195, texto: "Ámalos bien y sentirás que te besan cuando vengan a morder" },
-      { tiempo: 200, texto: "Hocicos calientes desenterrando tus mimos con sus hocicos ensangrentados" },
-      { tiempo: 205, texto: "Resiste" },
-      { tiempo: 210, texto: "Nada que compres te hará más completo" },
-      { tiempo: 215, texto: "Todo esto se alimenta de que nos sintamos siempre incompletos" },
-      { tiempo: 220, texto: "Y por eso buscamos la felicidad en lo que sea que anhelamos en el momento" },
-      { tiempo: 225, texto: "Y por eso nunca podemos encontrarla realmente allí" },
-      { tiempo: 230, texto: "Por eso te sientas con el amante por el que luchaste" },
-      { tiempo: 235, texto: "En el coche que sudaste años para comprar" },
-      { tiempo: 240, texto: "Llevando el anillo con el que soñaste toda tu vida" },
-      { tiempo: 245, texto: "Y aún así, alguna parte de ti no estará segura de que estos es lo que realmente quieres" },
-      { tiempo: 250, texto: "Deja de ansiar" },
-      { tiempo: 255, texto: "Mantente firme" },
-      { tiempo: 260, texto: "Pero si estás satisfecho con dónde estás, con quién eres" },
-      { tiempo: 265, texto: "No necesitarás comprar nuevo maquillaje o ropa nueva o nuevas ollas y sartenes" },
-      { tiempo: 270, texto: "Para cocinar receras nuevas y emocionantes para gente nueva y emocionante" },
-      { tiempo: 275, texto: "Para hacerte sentir como la persona nueva y emocionante que crees que deberías ser" },
-      { tiempo: 280, texto: "La felicidad, la marca, no es felicidad" },
-      { tiempo: 285, texto: "Somos más inteligentes de lo que creen que somos" },
-      { tiempo: 290, texto: "Nos toman a todos por idiotas, pero ese es su problema" },
-      { tiempo: 300, texto: "Cuando actuamos como idiotas, se convierte en nuestro problema" },
-      { tiempo: 305, texto: "Así que, mantente firme" },
-      { tiempo: 310, texto: "Respira hondo en una playa helada" },
-      { tiempo: 315, texto: "Prueba la sal de la amistad" },
-      { tiempo: 320, texto: "Fíjate en el movimiento de un extraño" },
-      { tiempo: 325, texto: "Mantente firme" },
-      { tiempo: 330, texto: "Y deja que sea" },
-      { tiempo: 335, texto: "Contagioso" },
-    ];
+          // Sonido si hay marca
+          if (f.sound && f.sound.type === 'beep') {
+            const { freq = 880, duration = 200, wave = 'sine' } = f.sound;
+            playBeep(freq, duration, wave);
+          }
 
-    const fraseDiv = document.getElementById('frase');
-    const startBtn = document.getElementById('startBtn');
+          i++;
+        }
 
-    startBtn.addEventListener('click', () => {
-      startBtn.disabled = true;
-      startBtn.textContent = "Experiencia en curso";
-      
-      // Ocultar frase inicial suavemente
-      fraseDiv.style.opacity = '0';
-      
-      setTimeout(() => {
-        const startTime = Date.now();
-        
-        // Mostrar primera frase
-        fraseDiv.textContent = "Preparados...";
-        fraseDiv.style.opacity = '1';
-        
-        const interval = setInterval(() => {
-          const elapsed = Math.floor((Date.now() - startTime) / 1000);
-          
-          const fraseActual = frases.find(f => f.tiempo === elapsed);
-          if (fraseActual) {
-            // Transición suave entre frases
+        // Fin
+        if (elapsed > lastTime + 2) {
+          clearInterval(interval);
+          setTimeout(() => {
             fraseDiv.style.opacity = '0';
-            
             setTimeout(() => {
-              fraseDiv.textContent = fraseActual.texto;
+              fraseDiv.textContent = "La experiencia ha concluido";
               fraseDiv.style.opacity = '1';
             }, 800);
-          }
+          }, 1500);
+        }
+      }, 200);
+    }, 1000);
+  });
+</script>
 
-          // Detener cuando pasen todas las frases
-          if (elapsed > frases[frases.length - 1].tiempo + 2) {
-            clearInterval(interval);
-            
-            setTimeout(() => {
-              fraseDiv.style.opacity = '0';
-              setTimeout(() => {
-                fraseDiv.textContent = "La experiencia ha concluido";
-                fraseDiv.style.opacity = '1';
-              }, 800);
-            }, 1500);
-          }
-        }, 1000);
-      }, 1000);
-    });
-  </script>
 </body>
 
 </html>
+
 
 
 

@@ -218,8 +218,61 @@
   </div>
 
   <script>
+    startBtn.addEventListener('click', () => {
+  ensureAudioCtx(); // desbloquea audio con el gesto del usuario
+  startBtn.disabled = true;
+  startBtn.textContent = "Experiencia en curso";
+
+  fraseDiv.style.opacity = '0';
+
+  setTimeout(() => {
+    const startTime = Date.now();
+    fraseDiv.textContent = "Preparados...";
+    fraseDiv.style.opacity = '1';
+
+    let i = 0; // siguiente frase a disparar
+    const lastTime = frases[frases.length - 1].tiempo;
+
+    const interval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+
+      // lanza todas las que ya hayan llegado por si el reloj salta
+      while (i < frases.length && elapsed >= frases[i].tiempo) {
+        const f = frases[i];
+
+        // transición visual
+        fraseDiv.style.opacity = '0';
+        setTimeout(() => {
+          fraseDiv.textContent = f.texto;
+          fraseDiv.style.opacity = '1';
+        }, 800);
+
+        // si tiene sonido, suénalo
+        if (f.sound && f.sound.type === 'beep') {
+          const { freq = 880, duration = 200, wave = 'sine' } = f.sound;
+          playBeep(freq, duration, wave);
+        }
+
+        i++;
+      }
+
+      // final
+      if (elapsed > lastTime + 2) {
+        clearInterval(interval);
+        setTimeout(() => {
+          fraseDiv.style.opacity = '0';
+          setTimeout(() => {
+            fraseDiv.textContent = "La experiencia ha concluido";
+            fraseDiv.style.opacity = '1';
+          }, 800);
+        }, 1500);
+      }
+    }, 200); // chequeo más fino para mejor sincronía
+  }, 1000);
+});
+
     const frases = [
-      { tiempo: 1, texto: "Cuando suene, haz lo que diga esa frase" },
+      { tiempo: 1, texto: "Cuando suene, haz lo que diga esa frase",  sound: { type: 'beep', freq: 784, duration: 180 } },
       { tiempo: 3, texto: "Pero, cuando el tiempo separa las vidas" },
       { tiempo: 8, texto: "Mantente firme" },
       { tiempo: 15, texto: "Cuando todo es fluido, nada puede saberse con certeza" },
@@ -334,6 +387,7 @@
 </body>
 
 </html>
+
 
 
 

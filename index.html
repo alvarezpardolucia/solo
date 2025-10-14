@@ -376,7 +376,7 @@ const frases = [
             // Transición visual
             fraseDiv.style.opacity = '0';
             setTimeout(() => {
-              fraseDiv.textContent = f.texto;
+              fraseDiv.innerHTML = f.texto;
               fraseDiv.style.opacity = '1';
             }, 800);
 
@@ -403,7 +403,7 @@ const frases = [
             setTimeout(() => {
               fraseDiv.style.opacity = '0';
               setTimeout(() => {
-                fraseDiv.textContent = "La experiencia ha concluido";
+                fraseDiv.innerHTML = "La experiencia ha concluido";
                 fraseDiv.style.opacity = '1';
               }, 800);
             }, 1500);
@@ -416,6 +416,7 @@ const frases = [
 </body>
 
 </html>
+
 
 
 
